@@ -1228,6 +1228,18 @@ describe('App ', function() {
     mainPage.expectVisible();
   });
   
+  fit('from Prasoon Goyal & Rachita Hajela: notification after making a move', ()=> {
+       oneTimeInitInBothBrowsers();
+      mainPage.openNewMatchModal().startAutoMatch();
+      tictactoe.run(()=>{
+        tictactoe.clickDivAndExpectPiece(0, 0, 'X');
+      });
+      notifications.expectOneNotificationWithTitleId('IN_APP_NOTIFICATION_MOVE_SENT_CREATE_NEW_MATCH');
+      notifications.closeNotificationWithIndex(0);
+      playPage.openExtraMatchOptions().gotoMain();
+    // notifications.expectOneNotification('IN_APP_NOTIFICATION_GAME_INVITE_TITLE', 'IN_APP_NOTIFICATION_GAME_INVITE_BODY', interpolationParams);
+  });
+  
   it('can invite using userName', ()=>{
     runInSecondBrowser(()=>{
       getPage('/gameinvite/?' + browser1NameStr + '=testtictactoe');
