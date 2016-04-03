@@ -898,8 +898,8 @@ var e2eTests;
             b.manage().logs().get('browser').then(function (browserLog) {
                 // See if there are any errors (warnings are ok)
                 var hasErrors = false;
-                for (var _i = 0; _i < browserLog.length; _i++) {
-                    var log_1 = browserLog[_i];
+                for (var _i = 0, browserLog_1 = browserLog; _i < browserLog_1.length; _i++) {
+                    var log_1 = browserLog_1[_i];
                     var level = log_1.level.name;
                     if (level === 'INFO' || level === 'WARNING')
                         continue; // (warnings are ok)
@@ -1254,6 +1254,21 @@ var e2eTests;
             playPage.openExtraMatchOptions().openNewMatchModal().gotoInviteFriends();
             friendsInvitePage.gotoMain();
             mainPage.expectVisible();
+        });
+        it('from Prasoon Goyal & Rachita Hajela: can go to practice, share printscreen, open game invite in 2nd browser, back to main menu', function () {
+            //oneTimeInitInBothBrowsers();
+            mainPage.openNewMatchModal().startPractice();
+            playPage.openExtraMatchOptions().sharePrintscreen();
+            runInSecondBrowser(function () {
+                getPage('/gameinvite/?' + browser1NameStr + '=testtictactoe');
+                var interpolationParams = { GAME_NAME: "test-tictactoe", PLAYER_NAME: browser1NameStr };
+                var translationId = "GAME_INVITE_PLAYER_NAME_WANTS_TO_PLAY_GAME_NAME_WITH_YOU";
+                l10n.expectTranslate(gameinvitePage.getInviteText(), translationId, interpolationParams);
+                loadApp();
+                notifications.expectOneNotification('IN_APP_NOTIFICATION_GAME_INVITE_TITLE', 'IN_APP_NOTIFICATION_GAME_INVITE_BODY', interpolationParams);
+                notifications.closeNotificationWithIndex(0);
+            });
+            playPage.openExtraMatchOptions().gotoMain();
         });
         it('can invite using userName', function () {
             runInSecondBrowser(function () {

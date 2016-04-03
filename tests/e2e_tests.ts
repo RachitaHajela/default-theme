@@ -1222,23 +1222,27 @@ describe('App ', function() {
     mainPage.openNewMatchModal().startPassAndPlay();
     tictactoe.run(()=>{
       tictactoe.clickDivAndExpectPiece(0, 0, 'X');
-    });
+    });                                                                                                                                                                                                                                                                                                                                                                
     playPage.openExtraMatchOptions().openNewMatchModal().gotoInviteFriends();
     friendsInvitePage.gotoMain();
     mainPage.expectVisible();
   });
   
-  fit('from Prasoon Goyal & Rachita Hajela: notification after making a move', ()=> {
-       oneTimeInitInBothBrowsers();
-      mainPage.openNewMatchModal().startAutoMatch();
-      tictactoe.run(()=>{
-        tictactoe.clickDivAndExpectPiece(0, 0, 'X');
+  it('from Prasoon Goyal & Rachita Hajela: can go to practice, share printscreen, open game invite in 2nd browser, back to main menu', ()=> {
+      //oneTimeInitInBothBrowsers();
+      mainPage.openNewMatchModal().startPractice();
+      playPage.openExtraMatchOptions().sharePrintscreen(); 
+      runInSecondBrowser(()=>{
+        getPage('/gameinvite/?' + browser1NameStr + '=testtictactoe');
+        let interpolationParams = {GAME_NAME: "test-tictactoe", PLAYER_NAME: browser1NameStr};
+        let translationId = "GAME_INVITE_PLAYER_NAME_WANTS_TO_PLAY_GAME_NAME_WITH_YOU";
+        l10n.expectTranslate(gameinvitePage.getInviteText(), translationId, interpolationParams);
+        loadApp();
+        notifications.expectOneNotification('IN_APP_NOTIFICATION_GAME_INVITE_TITLE', 'IN_APP_NOTIFICATION_GAME_INVITE_BODY', interpolationParams);
+        notifications.closeNotificationWithIndex(0);
       });
-      notifications.expectOneNotificationWithTitleId('IN_APP_NOTIFICATION_MOVE_SENT_CREATE_NEW_MATCH');
-      notifications.closeNotificationWithIndex(0);
       playPage.openExtraMatchOptions().gotoMain();
-    // notifications.expectOneNotification('IN_APP_NOTIFICATION_GAME_INVITE_TITLE', 'IN_APP_NOTIFICATION_GAME_INVITE_BODY', interpolationParams);
-  });
+    });
   
   it('can invite using userName', ()=>{
     runInSecondBrowser(()=>{
