@@ -926,8 +926,8 @@ var e2eTests;
             b.manage().logs().get('browser').then(function (browserLog) {
                 // See if there are any errors (warnings are ok)
                 var hasErrors = false;
-                for (var _i = 0, browserLog_1 = browserLog; _i < browserLog_1.length; _i++) {
-                    var log_1 = browserLog_1[_i];
+                for (var _i = 0; _i < browserLog.length; _i++) {
+                    var log_1 = browserLog[_i];
                     var level = log_1.level.name;
                     if (level === 'INFO' || level === 'WARNING')
                         continue; // (warnings are ok)
@@ -1275,15 +1275,8 @@ var e2eTests;
             friendsInvitePage.gotoMain();
             mainPage.expectVisible();
         });
-<<<<<<< HEAD
-        it('from Prasoon Goyal & Rachita Hajela: can go to practice, share printscreen, open game invite in 2nd browser, back to main menu', function () {
-            //oneTimeInitInBothBrowsers();
-            mainPage.openNewMatchModal().startPractice();
-            playPage.openExtraMatchOptions().sharePrintscreen();
-=======
         it('from Prasoon Goyal & Rachita Hajela: can go to practice, open game invite in 2nd browser, back to main menu', function () {
             mainPage.openNewMatchModal().startPractice();
->>>>>>> upstream/gh-pages
             runInSecondBrowser(function () {
                 getPage('/gameinvite/?' + browser1NameStr + '=testtictactoe');
                 var interpolationParams = { GAME_NAME: "test-tictactoe", PLAYER_NAME: browser1NameStr };
@@ -1295,8 +1288,6 @@ var e2eTests;
             });
             playPage.openExtraMatchOptions().gotoMain();
         });
-<<<<<<< HEAD
-=======
         it('from DiegoRincon: can finish a practice TicTacToe match and go back to main menu', function () {
             mainPage.openNewMatchModal().startPractice();
             tictactoe.run(function () {
@@ -1452,7 +1443,6 @@ var e2eTests;
                 playPage.openExtraMatchOptions().dismissMatch();
             });
         });
->>>>>>> upstream/gh-pages
         it('can invite using userName', function () {
             runInSecondBrowser(function () {
                 getPage('/gameinvite/?' + browser1NameStr + '=testtictactoe');
