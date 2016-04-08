@@ -295,6 +295,17 @@ module notifications {
   export function expectNoNotifications() {
     expectToBe(notifications.getNotificationsCount(), 0);
   }
+  export function expectMaybeGameinviteNotification() {
+    // There might be a gameinvite notification from some failed previous tests,
+    // if so, just close it.
+    getNotificationsCount().then((count) => {
+      expect(count == 0 || count == 1).toBeTruthy();
+      if (count == 1) {
+        expectGameInvite();
+        closeNotificationWithIndex(0);
+      }
+    });
+  }
   
   export function getTitle(notificationIndex: number) {
     return allElementsByNgIf('notification.title()').get(notificationIndex).getText();
@@ -313,8 +324,9 @@ module notifications {
   export function expectTooManyMatches_DismissEndedMatches() {
     expectOneNotificationWithMessageId("IN_APP_NOTIFICATION_TOO_MANY_MATCHES_DISMISS_ENDED_MATCHES");
   }
-  export function expectYouWereBlocked() {
-    expectOneNotificationWithMessageId("IN_APP_NOTIFICATION_YOU_WERE_BLOCKED");
+  export function expectYouWereBlockedInNotificationIndex(notificationIndex: number) {
+    waitForElement(allElementsByNgClick('notification.onClose()').get(notificationIndex));
+    l10n.expectTranslate(getMessage(notificationIndex), "IN_APP_NOTIFICATION_YOU_WERE_BLOCKED");
   }
   export function expectOneNotificationWithMessageId(messageId: string) {
     expectOneNotification("", messageId);
@@ -409,6 +421,19 @@ module playerInfoModal {
   }
   
   // to-do: add chat, invite to new match
+  export function getNewGame() {
+      return id('player_info_invite_to_match');
+  }
+  export function inviteToNewGame() {
+      click(getNewGame());
+  }
+  
+  export function getPlayerBlocked() {
+      return id('player_info_toggle_blocking');
+  }
+  export function blockPlayer() {
+      click(getPlayerBlocked());
+  }  
   
   export function getClose() {
     return id('close_player_info');
@@ -780,16 +805,15 @@ describe('App ', function() {
     return name;
   }
   
-  let checkNoErrorInLogsIntervalId: number = null;
   beforeEach(()=>{
     log('\n\n\nRunning test: ' + lastTest.fullName);
     loadApp();
-    notifications.expectNoNotifications();
-    checkNoErrorInLogsIntervalId = setInterval(checkNoErrorInLogs, 100);
+    notifications.expectMaybeGameinviteNotification();
+    checkNoErrorInLogs();
   });
   afterEach(()=>{
     checkPostTestInvariant();
-    clearInterval(checkNoErrorInLogsIntervalId);
+    checkNoErrorInLogs();
   });
   
   function checkNoErrorInLogs() {
@@ -1052,19 +1076,11 @@ describe('App ', function() {
     myInfoModal.cancel();
     runInSecondBrowser(()=>{
       loadApp();
-      notifications.expectNoNotifications();
+      notifications.expectMaybeGameinviteNotification();
       myInfoModal.cancel();
     });
     
-    // There might be a gameinvite notification from some failed previous tests,
-    // if so, just close it.
-    notifications.getNotificationsCount().then((count) => {
-      expect(count == 0 || count == 1).toBeTruthy();
-      if (count == 1) {
-        notifications.expectGameInvite();
-        notifications.closeNotificationWithIndex(0);
-      }
-    });
+    notifications.expectMaybeGameinviteNotification();
     changeDisplayAndUserName(browser1NameStr);
     runInSecondBrowser(()=>{
       changeDisplayAndUserName(browser2NameStr);
@@ -1228,6 +1244,7 @@ describe('App ', function() {
     mainPage.expectVisible();
   });
   
+<<<<<<< HEAD
   it('from Prasoon Goyal & Rachita Hajela: can go to practice, share printscreen, open game invite in 2nd browser, back to main menu', ()=> {
       //oneTimeInitInBothBrowsers();
       mainPage.openNewMatchModal().startPractice();
@@ -1243,6 +1260,193 @@ describe('App ', function() {
       });
       playPage.openExtraMatchOptions().gotoMain();
     });
+=======
+  it('from Prasoon Goyal & Rachita Hajela: can go to practice, open game invite in 2nd browser, back to main menu', ()=> {
+    mainPage.openNewMatchModal().startPractice();
+    runInSecondBrowser(()=>{
+      getPage('/gameinvite/?' + browser1NameStr + '=testtictactoe');
+      let interpolationParams = {GAME_NAME: "test-tictactoe", PLAYER_NAME: browser1NameStr};
+      let translationId = "GAME_INVITE_PLAYER_NAME_WANTS_TO_PLAY_GAME_NAME_WITH_YOU";
+      l10n.expectTranslate(gameinvitePage.getInviteText(), translationId, interpolationParams);
+      loadApp();
+      notifications.expectOneNotification('IN_APP_NOTIFICATION_GAME_INVITE_TITLE', 'IN_APP_NOTIFICATION_GAME_INVITE_BODY', interpolationParams);
+      notifications.closeNotificationWithIndex(0);
+    });
+    playPage.openExtraMatchOptions().gotoMain();
+  });
+  
+  it('from DiegoRincon: can finish a practice TicTacToe match and go back to main menu', function () {
+    mainPage.openNewMatchModal().startPractice();
+    tictactoe.run(function () {
+        tictactoe.expectEmptyBoard();
+        tictactoe.clickDivAndExpectPiece(1, 0, "X");
+        // wait for AI to make at least one move
+        // For some reason waitForElement doesn't work, but elementsLocated does work. Weird...
+        currBrowser.driver.wait(protractor.until.elementsLocated(by.id('e2e_test_pieceO_0x0')), 10000);
+        tictactoe.expectPiece(0, 0, 'O'); // AI played at position 0x0
+        tictactoe.clickDivAndExpectPiece(2, 0, "X");
+        currBrowser.driver.wait(protractor.until.elementsLocated(by.id('e2e_test_pieceO_0x1')), 10000);
+        tictactoe.expectPiece(0, 1, 'O'); // AI played at position 0x0
+        tictactoe.clickDivAndExpectPiece(1, 1, "X");
+        currBrowser.driver.wait(protractor.until.elementsLocated(by.id('e2e_test_pieceO_0x2')), 10000);
+        tictactoe.expectPiece(0, 2, 'O'); // AI played at position 0x0
+    });
+    expectDisplayed(id('game_over_match_status'));
+    gameOverModal.close();
+    playPage.openExtraMatchOptions().gotoMain();
+  });
+
+  it('from ismailmustafa and pdhar (team Carrom)@: can finish a passAndPlay match, go to the main menu, finish a practice match, and go back to main menu', ()=>{
+    mainPage.openNewMatchModal().startPassAndPlay();
+    
+    // Run game to completion
+    tictactoe.run(()=>{
+      tictactoe.expectEmptyBoard();
+      let isX = true;
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (i == 2 && j == 1) break;
+          tictactoe.clickDivAndExpectPiece(i, j, isX ? 'X' : 'O');
+          isX = !isX;
+        }
+      }
+      tictactoe.expectBoard(
+          [['X', 'O', 'X'],
+           ['O', 'X', 'O'],
+           ['X', '', '']]);
+    });
+    
+    // Check for game over modal, close, and go to main
+    expectDisplayed(id('game_over_match_status'));
+    gameOverModal.close();
+    playPage.openExtraMatchOptions().gotoMain();
+    
+    // Start a practice match
+    mainPage.openNewMatchModal().startPractice();
+    tictactoe.run(()=>{
+      tictactoe.clickDivAndExpectPiece(1, 1, 'X');
+      currBrowser.driver.wait(protractor.until.elementsLocated(by.id('e2e_test_pieceO_0x0')), 10000);
+      tictactoe.clickDivAndExpectPiece(2, 2, 'X');
+      currBrowser.driver.wait(protractor.until.elementsLocated(by.id('e2e_test_pieceO_0x2')), 10000);
+      tictactoe.clickDivAndExpectPiece(2, 1, 'X');
+      currBrowser.driver.wait(protractor.until.elementsLocated(by.id('e2e_test_pieceO_0x1')), 10000);
+      tictactoe.expectBoard(
+          [['O', 'O', 'O'],
+           ['', 'X', ''],
+           ['', 'X', 'X']]);
+    });
+    
+    // Check for game over modal, close, and go to main
+    expectDisplayed(id('game_over_match_status'));
+    gameOverModal.close();
+    playPage.openExtraMatchOptions().gotoMain();
+  });
+  
+  it('from pioneers team (Hung-Ting Wen): single-player game ends in win/lose', ()=> {
+    mainPage.openNewMatchModal().startPassAndPlay();
+    tictactoe.run(()=>{
+      /**
+       * First test case: X won
+       */
+      tictactoe.expectEmptyBoard();
+      tictactoe.clickDivAndExpectPiece(0, 0, 'X');
+      tictactoe.clickDivAndExpectPiece(1, 2, 'O');
+      tictactoe.clickDivAndExpectPiece(1, 1, 'X');
+      tictactoe.clickDivAndExpectPiece(2, 1, 'O');
+
+      //Winning move
+      tictactoe.clickDivAndExpectPiece(2, 2, 'X');
+      tictactoe.expectBoard(
+          [['X', '', ''],
+           ['', 'X', 'O'],
+           ['', 'O', 'X']]);
+    });
+    expectDisplayed(id('game_over_match_status'));
+    l10n.expectTranslate(gameOverModal.getMatchOverStatus(), 'MATCH_STATUS_OPPONENT_WON_WITH_NAME', {OPPONENT_NAME: 'PLAYER_X'});
+    
+    gameOverModal.close();
+    tictactoe.run(()=>{
+      /**
+       * Second test case: O won
+       */
+      tictactoe.expectEmptyBoard();
+      tictactoe.clickDivAndExpectPiece(0, 0, 'X');
+      tictactoe.clickDivAndExpectPiece(1, 1, 'O');
+      tictactoe.clickDivAndExpectPiece(1, 2, 'X');
+      tictactoe.clickDivAndExpectPiece(0, 2, 'O');
+      tictactoe.clickDivAndExpectPiece(2, 1, 'X');
+      //Winning move
+      tictactoe.clickDivAndExpectPiece(2, 0, 'O');
+      tictactoe.expectBoard(
+          [['X', '', 'O'],
+           ['', 'O', 'X'],
+           ['O', 'X', '']]);
+    });
+    expectDisplayed(id('game_over_match_status'));
+    l10n.expectTranslate(gameOverModal.getMatchOverStatus(), 'MATCH_STATUS_OPPONENT_WON_WITH_NAME', {OPPONENT_NAME: 'PLAYER_O'});
+    
+    //Cleanup
+    gameOverModal.close();
+    playPage.openExtraMatchOptions().gotoMain();
+  });
+  
+  it('from pioneers team (Hung-Ting Wen): single player game ends in a tie', ()=> {
+    mainPage.openNewMatchModal().startPassAndPlay();
+    tictactoe.run(()=>{
+      /**
+       * Third test case: tie
+       */
+      tictactoe.expectEmptyBoard();
+      for (let col = 0; col < 2; col++) {
+        tictactoe.clickDivAndExpectPiece(0, col, 'X');
+        tictactoe.clickDivAndExpectPiece(1, col, 'O');
+      }
+
+      tictactoe.clickDivAndExpectPiece(1, 2, 'X');
+      tictactoe.clickDivAndExpectPiece(0, 2, 'O');
+      tictactoe.clickDivAndExpectPiece(2, 0, 'X');
+      tictactoe.clickDivAndExpectPiece(2, 2, 'O');
+      tictactoe.clickDivAndExpectPiece(2, 1, 'X');
+      tictactoe.expectBoard(
+          [['X', 'X', 'O'],
+           ['O', 'O', 'X'],
+           ['X', 'X', 'O']]);
+    });
+    expectDisplayed(id('game_over_match_status'));
+    l10n.expectTranslate(gameOverModal.getMatchOverStatus(), 'MATCH_STATUS_ENDED_IN_TIE', {});
+    //Cleanup
+    gameOverModal.close();
+    playPage.openExtraMatchOptions().gotoMain();
+  });
+  
+  it('from Shuang Wang (Enclosed Combat team): can start a match from gameinvite, player1 blocks player2, and player2 receives block message when invite player1 to a new game', ()=>{
+    getPage('/gameinvite/?' + browser2NameStr + '=testtictactoe');
+    loadApp();
+    notifications.clickNotificationWithIndex(0);
+    playPage.openInfoModalForPlayerIndex(1);
+    playerInfoModal.blockPlayer();
+    playerInfoModal.close();
+    playPage.openExtraMatchOptions().dismissMatch();
+    runInSecondBrowser(()=>{
+      getPage('/gameinvite/?' + browser1NameStr + '=testtictactoe');
+      loadApp();
+      notifications.clickNotificationWithIndex(0);
+      playPage.openInfoModalForPlayerIndex(1);
+      playerInfoModal.inviteToNewGame();
+      tictactoe.run(()=>{
+        tictactoe.expectEmptyBoard();
+        tictactoe.clickDivAndExpectPiece(0, 0, 'X');
+      });
+      notifications.expectYouWereBlockedInNotificationIndex(1);
+      expect(notifications.getNotificationsCount()).toBe(2);
+      notifications.closeNotificationWithIndex(1);
+      notifications.closeNotificationWithIndex(0);
+      playPage.openExtraMatchOptions().dismissMatch();
+      mainPage.clickMatchIndex(0);
+      playPage.openExtraMatchOptions().dismissMatch();
+    });
+  }); 
+>>>>>>> upstream/gh-pages
   
   it('can invite using userName', ()=>{
     runInSecondBrowser(()=>{
