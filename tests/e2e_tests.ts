@@ -134,10 +134,11 @@ module extraMatchOptionsModal {
   }
   
   export function getGotoMain() {
-    return id('goto_main');
+    return id('extra_match_options_goto_main');
   }
   export function gotoMain() {
     click(getGotoMain());
+    waitForElementToDisappear(getClose());
   }
   
   export function getOpenNewMatchModal() {
@@ -160,6 +161,7 @@ module extraMatchOptionsModal {
   }
   export function dismissMatch() {
     click(getDismissMatch());
+    waitForElementToDisappear(getClose());
   }
   
   export function getLoadNext() {
@@ -167,20 +169,22 @@ module extraMatchOptionsModal {
   }
   export function loadNext() {
     click(getLoadNext());
+    waitForElementToDisappear(getClose());
   }
   
   export function getClose() {
     return id('close_extra_match_options_modal');
   }
   export function close() {
-    return click(getClose());
+    click(getClose());
+    waitForElementToDisappear(getClose());
   }
 }
 Logging.addLoggin("extraMatchOptionsModal", extraMatchOptionsModal);
 
 module gameOverModal {
   export function expectVisible() {
-    expectDisplayed(id('close_game_over_modal'));
+    expectDisplayed(getClose());
   }
   
   export function getMatchOverTitle() {
@@ -203,13 +207,7 @@ module gameOverModal {
   }
   export function dismissAndRematch() {
     click(getDismissAndRematch());
-  }
-  
-  export function getDismiss() {
-    return id('game_over_dismiss_match');
-  }
-  export function dismiss() {
-    click(getDismiss());
+    waitForElementToDisappear(getClose());
   }
   
   export function getClose() {
@@ -217,6 +215,7 @@ module gameOverModal {
   }
   export function close() {
     click(getClose());
+    waitForElementToDisappear(getClose());
   }
 }
 Logging.addLoggin("gameOverModal", gameOverModal);
@@ -227,10 +226,11 @@ module friendsInvitePage {
   }
   
   export function getGotoMain() {
-    return id('goto_main');
+    return id('invite_friends_goto_main');
   }
   export function gotoMain() {
     click(getGotoMain());
+    waitForElementToDisappear(getGotoMain());
   }
   
   export function getStartNameFilter() {
@@ -298,13 +298,13 @@ module notifications {
   export function expectMaybeGameinviteNotification() {
     // There might be a gameinvite notification from some failed previous tests,
     // if so, just close it.
-    getNotificationsCount().then((count) => {
+    getNotificationsCount().then(runInSameBrowser((count) => {
       expect(count == 0 || count == 1).toBeTruthy();
       if (count == 1) {
         expectGameInvite();
         closeNotificationWithIndex(0);
       }
-    });
+    }));
   }
   
   export function getTitle(notificationIndex: number) {
@@ -356,12 +356,16 @@ module newMatchModal {
   export function expectVisible() {
     expectDisplayed(getClose());
   }
+  export function waitTillClosed() {
+    waitForElementToDisappear(getClose());
+  }
   
   export function getStartRematch() {
     return id('start_rematch');
   }
   export function startRematch() {
     click(getStartRematch());
+    waitTillClosed();
   }
   
   export function getStartAutoMatch() {
@@ -369,6 +373,7 @@ module newMatchModal {
   }
   export function startAutoMatch() {
     click(getStartAutoMatch());
+    waitTillClosed();
   }
   
   export function getGotoInviteFriends() {
@@ -390,6 +395,7 @@ module newMatchModal {
   }
   export function startPractice() {
     click(getStartPractice());
+    waitTillClosed();
   }
   
   export function getStartPassAndPlay() {
@@ -397,6 +403,7 @@ module newMatchModal {
   }
   export function startPassAndPlay() {
     click(getStartPassAndPlay());
+    waitTillClosed();
   }
   
   export function getClose() {
@@ -404,6 +411,7 @@ module newMatchModal {
   }
   export function close() {
     click(getClose());
+    waitTillClosed();
   }
 }
 Logging.addLoggin("newMatchModal", newMatchModal);
@@ -440,6 +448,7 @@ module playerInfoModal {
   }
   export function close() {
     click(getClose());
+    waitForElementToDisappear(getClose());
   }
 }
 Logging.addLoggin("playerInfoModal", playerInfoModal);
@@ -455,6 +464,9 @@ module myInfoModal {
   // Save changes done in my info modal
   export function submit() {
     click(getSubmit());
+    // Submitting still keeps the modal open until we verify that the username is unique,
+    // and if it's not (and we have an e2e test for it), then it shows an error and keeps myInfoModal open.
+    // So we can't do this: waitForElementToDisappear(getSubmit());
   }
   
   export function getCancel() {
@@ -463,6 +475,7 @@ module myInfoModal {
   // Cancel changes and close my info modal
   export function cancel() {
     click(getCancel());
+    waitForElementToDisappear(getCancel());
   }
   
   export function getTitle() {
@@ -537,6 +550,7 @@ module feedbackModal {
   }
   export function close() {
     click(getClose());
+    waitForElementToDisappear(getClose());
   }
 }
 Logging.addLoggin("feedbackModal", feedbackModal);
@@ -645,6 +659,34 @@ module JasmineOverrides {
 declare var require: (module: string) => any;
 
 // Common functions
+let currBrowser: protractor.Protractor = browser;
+let secondBrowser: protractor.Protractor = browser.forkNewDriverInstance();
+function getBrowserName(b: protractor.Protractor) {
+  return b === secondBrowser ? "browser2" : "browser1";
+}
+
+function setFirstBrowser() {
+  currBrowser = browser;
+}
+function runInSecondBrowser(fn: ()=>void) {
+  runInBrowser(secondBrowser, fn);
+}
+function runInBrowser(b: protractor.Protractor, fn: ()=>void) {
+  let oldBrowser = currBrowser;
+  currBrowser = b;
+  try {
+    fn();
+  } finally {
+    currBrowser = oldBrowser;
+  }
+}
+function runInSameBrowser<T>(fn: (t: T) => void) {
+  let b = currBrowser;
+  return (t: T) => {
+    runInBrowser(b, () => { fn(t); });
+  };
+}
+
 function check(value: boolean) {
   if (!value) throw new Error("Check failed");
 }
@@ -653,12 +695,6 @@ function regexEscape(text: string) {
 }
 function getStacktrace(): string {
   return (<any>new Error()).stack;
-}
-
-let currBrowser: protractor.Protractor = browser;
-let secondBrowser: protractor.Protractor = browser.forkNewDriverInstance();
-function getBrowserName(b: protractor.Protractor) {
-  return b === secondBrowser ? "browser2" : "browser1";
 }
 
 function element(locator: webdriver.Locator) {
@@ -679,10 +715,11 @@ function allElementsByNgIf(ifExpression: string) {
 
 function waitForElement(elem: protractor.ElementFinder) {
   let elemName = getElementName(elem);
-  willDoLog("waitForElement " + elemName + " in " + getBrowserName(currBrowser));
+  willDoLog("waitForElement " + elemName);
   // Wait until it becomes displayed. It might not be displayed right now
   // because it takes some time to pass messages via postMessage between game and platform.
-  currBrowser.driver.wait(()=>elem.isDisplayed(), 10000).then(
+  currBrowser.driver.wait(
+    ()=>elem.isDisplayed().then((isDisplayed)=>elem.isEnabled().then((isEnabled)=>isDisplayed&&isEnabled)), 10000).then(
     ()=>{
       // success
     }, function () {
@@ -690,6 +727,21 @@ function waitForElement(elem: protractor.ElementFinder) {
       error("Failed waitForElement: " + elemName + " args=" + JSON.stringify(arguments));
     });
   expectToBe(elem.isDisplayed(), true);
+}
+
+function waitForElementToDisappear(elem: protractor.ElementFinder) {
+  let elemName = getElementName(elem);
+  willDoLog("waitForElementToDisappear " + elemName);
+  // Wait until it becomes displayed. It might not be displayed right now
+  // because it takes some time to pass messages via postMessage between game and platform.
+  currBrowser.driver.wait(()=>elem.isPresent().then((isPresent)=>!isPresent), 10000).then(
+    ()=>{
+      // success
+    }, function () {
+      // failure
+      error("Failed waitForElementToDisappear: " + elemName + " args=" + JSON.stringify(arguments));
+    });
+  expectToBe(elem.isPresent(), false);
 }
 
 function getElementName(elem: protractor.ElementFinder) {
@@ -805,10 +857,18 @@ describe('App ', function() {
     return name;
   }
   
+  function loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification() {
+    loadApp();
+    // Before closing any notification (like gameinvite), we need to close my info modal
+    myInfoModal.getCancel().isPresent().then(runInSameBrowser((isMyInfoModalDisplayed) => {
+      if (isMyInfoModalDisplayed) myInfoModal.cancel();
+    }));
+    notifications.expectMaybeGameinviteNotification();
+  }
+  
   beforeEach(()=>{
     log('\n\n\nRunning test: ' + lastTest.fullName);
-    loadApp();
-    notifications.expectMaybeGameinviteNotification();
+    loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification();
     checkNoErrorInLogs();
   });
   afterEach(()=>{
@@ -883,18 +943,6 @@ describe('App ', function() {
         error(getBrowserName(b) + " has a warning/error in the logs. Opens the developer console in the browsers and look at the logs.");
       }
     });
-  }
-
-  function setFirstBrowser() {
-    currBrowser = browser;
-  }
-  function runInSecondBrowser(fn: ()=>void) {
-    currBrowser = secondBrowser;
-    try {
-      fn();
-    } finally {
-      currBrowser = browser;
-    }
   }
 
   // We have 3 projects: app, gameinvite, gamedeveloper.
@@ -1043,17 +1091,20 @@ describe('App ', function() {
     loadApp();
     notifications.expectOneNotification("PUSH_NOTIFICATION_YOUR_TURN_NOTIFICATION_TITLE", "PUSH_NOTIFICATION_YOUR_TURN_NOTIFICATION_BODY", 
       {OPPONENT_NAME: browser2NameStr})
+    notifications.closeNotificationWithIndex(0);
     mainPage.expectMatchCounts({yourTurn: 1, opponentTurn: 0, ended: 0});
     dismissOnlyMatch();
     runInSecondBrowser(()=>{
       loadApp();
       notifications.expectOneNotification("PUSH_NOTIFICATION_OPPONENT_QUIT_NOTIFICATION_TITLE", "PUSH_NOTIFICATION_OPPONENT_QUIT_NOTIFICATION_BODY", 
-        {OPPONENT_NAME: browser1NameStr})
+        {OPPONENT_NAME: browser1NameStr});
+      notifications.closeNotificationWithIndex(0);
       mainPage.expectMatchCounts({yourTurn: 0, opponentTurn: 0, ended: 1});
       mainPage.clickMatchIndex(0);
       // Will show gameOverModal
       gameOverModal.expectVisible();
-      gameOverModal.dismiss();
+      gameOverModal.close();
+      playPage.openExtraMatchOptions().dismissMatch();
       mainPage.expectNoMatches();
     });
   }
@@ -1068,19 +1119,15 @@ describe('App ', function() {
     // ChannelApi keeps an HTTP connection open, which causes protractor to fail after 10 seconds with:
     // Error Timed out waiting for Protractor to synchronize with the page
     // So we turn off channel API (isProtractor=true does that).
-    getPage('/app/?onlyGameId=' + GAME_ID + '&isProtractor=true&testBrowserName=' + getBrowserName(currBrowser));
+    getPage('/app/index.html?onlyGameId=' + GAME_ID + '&isProtractor=true&testBrowserName=' + getBrowserName(currBrowser));
   }
 
   function oneTimeInitInBothBrowsers() {
-    // The first time the app loads, we show "my user info modal".
-    myInfoModal.cancel();
+    // The first time the app loads, we show "my user info modal" (but in beforeEach I close myInfo modal to close possible gameinvite notification)
     runInSecondBrowser(()=>{
-      loadApp();
-      notifications.expectMaybeGameinviteNotification();
-      myInfoModal.cancel();
+      loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification();
     });
     
-    notifications.expectMaybeGameinviteNotification();
     changeDisplayAndUserName(browser1NameStr);
     runInSecondBrowser(()=>{
       changeDisplayAndUserName(browser2NameStr);
@@ -1184,7 +1231,7 @@ describe('App ', function() {
     playPage.openExtraMatchOptions().gotoMain();
   });
 
-  it('can make a move in a practie TicTacToe match, and restart it', ()=>{
+  it('can make a move in a practice TicTacToe match, and restart it', ()=>{
     mainPage.openNewMatchModal().startPractice();
     // Make a move in TicTacToe!
     tictactoe.run(()=>{
@@ -1416,6 +1463,7 @@ describe('App ', function() {
       notifications.clickNotificationWithIndex(0);
       playPage.openInfoModalForPlayerIndex(1);
       playerInfoModal.inviteToNewGame();
+      notifications.expectNoNotifications();
       tictactoe.run(()=>{
         tictactoe.expectEmptyBoard();
         tictactoe.clickDivAndExpectPiece(0, 0, 'X');
@@ -1490,13 +1538,11 @@ describe('App ', function() {
         'test-tictactoe');
     });
   });
-  
-  // This test should either be fit (if you're trying to debug something) or xit (so it's excluded),
-  // because this test assumes a clean slate (it assumes no other test run before it).
-  // "f" (Focus) only on this test, and don't run other tests.
-  // "x" (Exclude) this test and run the other tests.
-  xit('Test that is either Focused or eXcluded', ()=>{
-    oneTimeInitInBothBrowsers();
+    
+  it('cleanup any remaining gameinvites', function () {
+    runInSecondBrowser(()=>{
+      loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification();
+    });
   });
 });
 

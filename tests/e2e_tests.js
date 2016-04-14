@@ -150,11 +150,12 @@ var e2eTests;
         }
         extraMatchOptionsModal.expectVisible = expectVisible;
         function getGotoMain() {
-            return id('goto_main');
+            return id('extra_match_options_goto_main');
         }
         extraMatchOptionsModal.getGotoMain = getGotoMain;
         function gotoMain() {
             click(getGotoMain());
+            waitForElementToDisappear(getClose());
         }
         extraMatchOptionsModal.gotoMain = gotoMain;
         function getOpenNewMatchModal() {
@@ -180,6 +181,7 @@ var e2eTests;
         extraMatchOptionsModal.getDismissMatch = getDismissMatch;
         function dismissMatch() {
             click(getDismissMatch());
+            waitForElementToDisappear(getClose());
         }
         extraMatchOptionsModal.dismissMatch = dismissMatch;
         function getLoadNext() {
@@ -188,6 +190,7 @@ var e2eTests;
         extraMatchOptionsModal.getLoadNext = getLoadNext;
         function loadNext() {
             click(getLoadNext());
+            waitForElementToDisappear(getClose());
         }
         extraMatchOptionsModal.loadNext = loadNext;
         function getClose() {
@@ -195,7 +198,8 @@ var e2eTests;
         }
         extraMatchOptionsModal.getClose = getClose;
         function close() {
-            return click(getClose());
+            click(getClose());
+            waitForElementToDisappear(getClose());
         }
         extraMatchOptionsModal.close = close;
     })(extraMatchOptionsModal || (extraMatchOptionsModal = {}));
@@ -203,7 +207,7 @@ var e2eTests;
     var gameOverModal;
     (function (gameOverModal) {
         function expectVisible() {
-            expectDisplayed(id('close_game_over_modal'));
+            expectDisplayed(getClose());
         }
         gameOverModal.expectVisible = expectVisible;
         function getMatchOverTitle() {
@@ -228,22 +232,16 @@ var e2eTests;
         gameOverModal.getDismissAndRematch = getDismissAndRematch;
         function dismissAndRematch() {
             click(getDismissAndRematch());
+            waitForElementToDisappear(getClose());
         }
         gameOverModal.dismissAndRematch = dismissAndRematch;
-        function getDismiss() {
-            return id('game_over_dismiss_match');
-        }
-        gameOverModal.getDismiss = getDismiss;
-        function dismiss() {
-            click(getDismiss());
-        }
-        gameOverModal.dismiss = dismiss;
         function getClose() {
             return id('close_game_over_modal');
         }
         gameOverModal.getClose = getClose;
         function close() {
             click(getClose());
+            waitForElementToDisappear(getClose());
         }
         gameOverModal.close = close;
     })(gameOverModal || (gameOverModal = {}));
@@ -255,11 +253,12 @@ var e2eTests;
         }
         friendsInvitePage.expectVisible = expectVisible;
         function getGotoMain() {
-            return id('goto_main');
+            return id('invite_friends_goto_main');
         }
         friendsInvitePage.getGotoMain = getGotoMain;
         function gotoMain() {
             click(getGotoMain());
+            waitForElementToDisappear(getGotoMain());
         }
         friendsInvitePage.gotoMain = gotoMain;
         function getStartNameFilter() {
@@ -336,13 +335,13 @@ var e2eTests;
         function expectMaybeGameinviteNotification() {
             // There might be a gameinvite notification from some failed previous tests,
             // if so, just close it.
-            getNotificationsCount().then(function (count) {
+            getNotificationsCount().then(runInSameBrowser(function (count) {
                 expect(count == 0 || count == 1).toBeTruthy();
                 if (count == 1) {
                     expectGameInvite();
                     closeNotificationWithIndex(0);
                 }
-            });
+            }));
         }
         notifications.expectMaybeGameinviteNotification = expectMaybeGameinviteNotification;
         function getTitle(notificationIndex) {
@@ -402,12 +401,17 @@ var e2eTests;
             expectDisplayed(getClose());
         }
         newMatchModal.expectVisible = expectVisible;
+        function waitTillClosed() {
+            waitForElementToDisappear(getClose());
+        }
+        newMatchModal.waitTillClosed = waitTillClosed;
         function getStartRematch() {
             return id('start_rematch');
         }
         newMatchModal.getStartRematch = getStartRematch;
         function startRematch() {
             click(getStartRematch());
+            waitTillClosed();
         }
         newMatchModal.startRematch = startRematch;
         function getStartAutoMatch() {
@@ -416,6 +420,7 @@ var e2eTests;
         newMatchModal.getStartAutoMatch = getStartAutoMatch;
         function startAutoMatch() {
             click(getStartAutoMatch());
+            waitTillClosed();
         }
         newMatchModal.startAutoMatch = startAutoMatch;
         function getGotoInviteFriends() {
@@ -440,6 +445,7 @@ var e2eTests;
         newMatchModal.getStartPractice = getStartPractice;
         function startPractice() {
             click(getStartPractice());
+            waitTillClosed();
         }
         newMatchModal.startPractice = startPractice;
         function getStartPassAndPlay() {
@@ -448,6 +454,7 @@ var e2eTests;
         newMatchModal.getStartPassAndPlay = getStartPassAndPlay;
         function startPassAndPlay() {
             click(getStartPassAndPlay());
+            waitTillClosed();
         }
         newMatchModal.startPassAndPlay = startPassAndPlay;
         function getClose() {
@@ -456,6 +463,7 @@ var e2eTests;
         newMatchModal.getClose = getClose;
         function close() {
             click(getClose());
+            waitTillClosed();
         }
         newMatchModal.close = close;
     })(newMatchModal || (newMatchModal = {}));
@@ -497,6 +505,7 @@ var e2eTests;
         playerInfoModal.getClose = getClose;
         function close() {
             click(getClose());
+            waitForElementToDisappear(getClose());
         }
         playerInfoModal.close = close;
     })(playerInfoModal || (playerInfoModal = {}));
@@ -514,6 +523,9 @@ var e2eTests;
         // Save changes done in my info modal
         function submit() {
             click(getSubmit());
+            // Submitting still keeps the modal open until we verify that the username is unique,
+            // and if it's not (and we have an e2e test for it), then it shows an error and keeps myInfoModal open.
+            // So we can't do this: waitForElementToDisappear(getSubmit());
         }
         myInfoModal.submit = submit;
         function getCancel() {
@@ -523,6 +535,7 @@ var e2eTests;
         // Cancel changes and close my info modal
         function cancel() {
             click(getCancel());
+            waitForElementToDisappear(getCancel());
         }
         myInfoModal.cancel = cancel;
         function getTitle() {
@@ -608,6 +621,7 @@ var e2eTests;
         feedbackModal.getClose = getClose;
         function close() {
             click(getClose());
+            waitForElementToDisappear(getClose());
         }
         feedbackModal.close = close;
     })(feedbackModal || (feedbackModal = {}));
@@ -724,6 +738,33 @@ var e2eTests;
         });
     })(JasmineOverrides || (JasmineOverrides = {}));
     // Common functions
+    var currBrowser = browser;
+    var secondBrowser = browser.forkNewDriverInstance();
+    function getBrowserName(b) {
+        return b === secondBrowser ? "browser2" : "browser1";
+    }
+    function setFirstBrowser() {
+        currBrowser = browser;
+    }
+    function runInSecondBrowser(fn) {
+        runInBrowser(secondBrowser, fn);
+    }
+    function runInBrowser(b, fn) {
+        var oldBrowser = currBrowser;
+        currBrowser = b;
+        try {
+            fn();
+        }
+        finally {
+            currBrowser = oldBrowser;
+        }
+    }
+    function runInSameBrowser(fn) {
+        var b = currBrowser;
+        return function (t) {
+            runInBrowser(b, function () { fn(t); });
+        };
+    }
     function check(value) {
         if (!value)
             throw new Error("Check failed");
@@ -733,11 +774,6 @@ var e2eTests;
     }
     function getStacktrace() {
         return (new Error()).stack;
-    }
-    var currBrowser = browser;
-    var secondBrowser = browser.forkNewDriverInstance();
-    function getBrowserName(b) {
-        return b === secondBrowser ? "browser2" : "browser1";
     }
     function element(locator) {
         return currBrowser.element(locator);
@@ -754,16 +790,29 @@ var e2eTests;
     }
     function waitForElement(elem) {
         var elemName = getElementName(elem);
-        willDoLog("waitForElement " + elemName + " in " + getBrowserName(currBrowser));
+        willDoLog("waitForElement " + elemName);
         // Wait until it becomes displayed. It might not be displayed right now
         // because it takes some time to pass messages via postMessage between game and platform.
-        currBrowser.driver.wait(function () { return elem.isDisplayed(); }, 10000).then(function () {
+        currBrowser.driver.wait(function () { return elem.isDisplayed().then(function (isDisplayed) { return elem.isEnabled().then(function (isEnabled) { return isDisplayed && isEnabled; }); }); }, 10000).then(function () {
             // success
         }, function () {
             // failure
             error("Failed waitForElement: " + elemName + " args=" + JSON.stringify(arguments));
         });
         expectToBe(elem.isDisplayed(), true);
+    }
+    function waitForElementToDisappear(elem) {
+        var elemName = getElementName(elem);
+        willDoLog("waitForElementToDisappear " + elemName);
+        // Wait until it becomes displayed. It might not be displayed right now
+        // because it takes some time to pass messages via postMessage between game and platform.
+        currBrowser.driver.wait(function () { return elem.isPresent().then(function (isPresent) { return !isPresent; }); }, 10000).then(function () {
+            // success
+        }, function () {
+            // failure
+            error("Failed waitForElementToDisappear: " + elemName + " args=" + JSON.stringify(arguments));
+        });
+        expectToBe(elem.isPresent(), false);
     }
     function getElementName(elem) {
         return getBrowserName(currBrowser) + "." + elem.locator();
@@ -862,10 +911,18 @@ var e2eTests;
             check(name.length <= 30);
             return name;
         }
+        function loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification() {
+            loadApp();
+            // Before closing any notification (like gameinvite), we need to close my info modal
+            myInfoModal.getCancel().isPresent().then(runInSameBrowser(function (isMyInfoModalDisplayed) {
+                if (isMyInfoModalDisplayed)
+                    myInfoModal.cancel();
+            }));
+            notifications.expectMaybeGameinviteNotification();
+        }
         beforeEach(function () {
             log('\n\n\nRunning test: ' + lastTest.fullName);
-            loadApp();
-            notifications.expectMaybeGameinviteNotification();
+            loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification();
             checkNoErrorInLogs();
         });
         afterEach(function () {
@@ -940,18 +997,6 @@ var e2eTests;
                     error(getBrowserName(b) + " has a warning/error in the logs. Opens the developer console in the browsers and look at the logs.");
                 }
             });
-        }
-        function setFirstBrowser() {
-            currBrowser = browser;
-        }
-        function runInSecondBrowser(fn) {
-            currBrowser = secondBrowser;
-            try {
-                fn();
-            }
-            finally {
-                currBrowser = browser;
-            }
         }
         var browserNameToProject = {};
         function getProject(b) {
@@ -1093,16 +1138,19 @@ var e2eTests;
             });
             loadApp();
             notifications.expectOneNotification("PUSH_NOTIFICATION_YOUR_TURN_NOTIFICATION_TITLE", "PUSH_NOTIFICATION_YOUR_TURN_NOTIFICATION_BODY", { OPPONENT_NAME: browser2NameStr });
+            notifications.closeNotificationWithIndex(0);
             mainPage.expectMatchCounts({ yourTurn: 1, opponentTurn: 0, ended: 0 });
             dismissOnlyMatch();
             runInSecondBrowser(function () {
                 loadApp();
                 notifications.expectOneNotification("PUSH_NOTIFICATION_OPPONENT_QUIT_NOTIFICATION_TITLE", "PUSH_NOTIFICATION_OPPONENT_QUIT_NOTIFICATION_BODY", { OPPONENT_NAME: browser1NameStr });
+                notifications.closeNotificationWithIndex(0);
                 mainPage.expectMatchCounts({ yourTurn: 0, opponentTurn: 0, ended: 1 });
                 mainPage.clickMatchIndex(0);
                 // Will show gameOverModal
                 gameOverModal.expectVisible();
-                gameOverModal.dismiss();
+                gameOverModal.close();
+                playPage.openExtraMatchOptions().dismissMatch();
                 mainPage.expectNoMatches();
             });
         }
@@ -1115,17 +1163,13 @@ var e2eTests;
             // ChannelApi keeps an HTTP connection open, which causes protractor to fail after 10 seconds with:
             // Error Timed out waiting for Protractor to synchronize with the page
             // So we turn off channel API (isProtractor=true does that).
-            getPage('/app/?onlyGameId=' + GAME_ID + '&isProtractor=true&testBrowserName=' + getBrowserName(currBrowser));
+            getPage('/app/index.html?onlyGameId=' + GAME_ID + '&isProtractor=true&testBrowserName=' + getBrowserName(currBrowser));
         }
         function oneTimeInitInBothBrowsers() {
-            // The first time the app loads, we show "my user info modal".
-            myInfoModal.cancel();
+            // The first time the app loads, we show "my user info modal" (but in beforeEach I close myInfo modal to close possible gameinvite notification)
             runInSecondBrowser(function () {
-                loadApp();
-                notifications.expectMaybeGameinviteNotification();
-                myInfoModal.cancel();
+                loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification();
             });
-            notifications.expectMaybeGameinviteNotification();
             changeDisplayAndUserName(browser1NameStr);
             runInSecondBrowser(function () {
                 changeDisplayAndUserName(browser2NameStr);
@@ -1219,7 +1263,7 @@ var e2eTests;
             expectDisplayed(playPage.getOpenExtraMatchOptions());
             playPage.openExtraMatchOptions().gotoMain();
         });
-        it('can make a move in a practie TicTacToe match, and restart it', function () {
+        it('can make a move in a practice TicTacToe match, and restart it', function () {
             mainPage.openNewMatchModal().startPractice();
             // Make a move in TicTacToe!
             tictactoe.run(function () {
@@ -1430,6 +1474,7 @@ var e2eTests;
                 notifications.clickNotificationWithIndex(0);
                 playPage.openInfoModalForPlayerIndex(1);
                 playerInfoModal.inviteToNewGame();
+                notifications.expectNoNotifications();
                 tictactoe.run(function () {
                     tictactoe.expectEmptyBoard();
                     tictactoe.clickDivAndExpectPiece(0, 0, 'X');
@@ -1494,12 +1539,10 @@ var e2eTests;
                 expectModel('developerGame.game.phonegapAppName', 'test-tictactoe');
             });
         });
-        // This test should either be fit (if you're trying to debug something) or xit (so it's excluded),
-        // because this test assumes a clean slate (it assumes no other test run before it).
-        // "f" (Focus) only on this test, and don't run other tests.
-        // "x" (Exclude) this test and run the other tests.
-        xit('Test that is either Focused or eXcluded', function () {
-            oneTimeInitInBothBrowsers();
+        it('cleanup any remaining gameinvites', function () {
+            runInSecondBrowser(function () {
+                loadAppAndCloseMyInfoModalAndMaybeGameinviteNotification();
+            });
         });
     });
 })(e2eTests || (e2eTests = {}));
