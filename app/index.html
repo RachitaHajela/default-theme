@@ -68,7 +68,8 @@
                             <div class="match" ng-repeat="match in main.endedMatches() track by match.getMatchId()">
                                 <div class="top" ng-click="match.load()">
                                     <div class="title">{{match.getMatchStatusText({showDisplayName:false})}}</div>
-                                    <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }} <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
+                                    <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }}
+                                        <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
                                 </div>
                                 <div class="img-container">
                                     <img alt="Player avatar" ng-class="{img: true}" ng-repeat="player in match.getPlayers({limit:1, excludeMe: true})" ng-src="{{player.getAvatarImage()}}"
@@ -404,10 +405,13 @@
                     <h4>{{ 'MODAL_TITLE_FEEDBACK_AND_BUGS' | translate }}</h4>
                     <textarea ng-model="main.model().feedbackText" rows="5" placeholder="{{ 'MODAL_FEEDBACK_AND_BUGS_PLACEHOLDER_TEXT' | translate }}"
                     required></textarea>
-                    <button type="button" class="btn btn-primary" ng-click="main.sendFeedback(main.model().feedbackText)">{{ 'MODAL_BUTTON_SEND_FEEDBACK_AND_BUGS' | translate }}</button>
+                    <md-button class="md-raised md-primary" ng-click="main.sendFeedback(main.model().feedbackText)">
+                        {{ 'MODAL_BUTTON_SEND_FEEDBACK_AND_BUGS' | translate }}</md-button>
+                    <md-button class="md-raised md-primary" ng-click="modal.hide()">{{ 'MODAL_BUTTON_CLOSE' | translate }}</md-button>
+                    <!-- <button type="button" class="btn btn-primary" ng-click="main.sendFeedback(main.model().feedbackText)">{{ 'MODAL_BUTTON_SEND_FEEDBACK_AND_BUGS' | translate }}</button>
                     <button id="test_close_feedback_modal" type="button" class="btn btn-default" ng-click="modal.hide()">
                         {{ 'MODAL_BUTTON_CLOSE' | translate }}
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -418,21 +422,22 @@
             <div class="overlayModal" ng-click="modal.backdrop($event)" ng-if="modal.isShowing()" aria-hidden="true">
                 <div class="modal-dialog">
                     <h4 id="test_game_over_match_title">{{ 'MODAL_TITLE_MATCH_OVER' | translate }}</h4>
-                    <div id="test_game_over_match_status">
+                    <div class="text" id="test_game_over_match_status">
                         {{main.currentMatch().getMatchStatusText({showDisplayName:true})}}
                     </div>
-                    <button id="test_share_invite_link_after_victory" type="button" class="btn btn-primary" ng-if="main.didWinMultiplayerMatch()"
+                    <md-button ng-if="main.didWinMultiplayerMatch()" class="md-raised md-primary" ng-click="main.closeGameOverModal(); main.shareInviteLink({takePrintscreen: true, translationIdPrefix: 'SHARE_INTENT_WON_GAME'})">
+                        {{ 'SHARE_INTENT_WON_GAME_TAKE_SCREENSHOT' | translate }}</md-button>
+
+                    <!--    <button id="test_share_invite_link_after_victory" type="button" class="btn btn-primary" ng-if="main.didWinMultiplayerMatch()"
                     ng-click="main.closeGameOverModal(); main.shareInviteLink({takePrintscreen: true, translationIdPrefix: 'SHARE_INTENT_WON_GAME'})">
                         {{ 'SHARE_INTENT_WON_GAME_TAKE_SCREENSHOT' | translate }}
-                    </button>
+                    </button> -->
                     <div id="test_game_over_rematch" class="menu-item" ng-click="main.currentMatch().startNewMatch()" ng-if="main.currentMatch().canRematch()">
                         <div class="text">
                             {{ main.translateRematch() }}
                         </div>
                     </div>
-                    <button id="test_close_game_over_modal" type="button" class="btn" ng-click="main.closeGameOverModal()">
-                        {{ 'MODAL_BUTTON_CLOSE' | translate }}
-                    </button>
+                    <md-button class="md-raised md-primary" ng-click="main.closeGameOverModal()">{{ 'MODAL_BUTTON_CLOSE' | translate }}</md-button>
                 </div>
             </div>
         </div>

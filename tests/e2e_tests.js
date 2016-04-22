@@ -983,8 +983,8 @@ var e2eTests;
             b.manage().logs().get('browser').then(function (browserLog) {
                 // See if there are any errors (warnings are ok)
                 var hasErrors = false;
-                for (var _i = 0; _i < browserLog.length; _i++) {
-                    var log_1 = browserLog[_i];
+                for (var _i = 0, browserLog_1 = browserLog; _i < browserLog_1.length; _i++) {
+                    var log_1 = browserLog_1[_i];
                     var level = log_1.level.name;
                     if (level === 'INFO' || level === 'WARNING')
                         continue; // (warnings are ok)

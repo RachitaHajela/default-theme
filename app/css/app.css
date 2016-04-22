@@ -194,7 +194,7 @@ img.hero {
 }
 .notification {
   display: flex;
-  background-color: #2BA22D;
+  background-color: #AB47BC;
   border-radius: 5px;
   color: white;
   padding: 5px 10px;
@@ -218,7 +218,7 @@ img.hero {
   margin: 5px;
 }
 .notification-dismiss {
-  color: black;
+  color: white;
   margin-left: 10px;
   font-size: 40px;
 }
@@ -324,7 +324,7 @@ img.hero {
   overflow: hidden;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
-  background-color: #555;
+  background-color: #9C27B0;
   display: flex;
   align-items: center;
   justify-content: center;
