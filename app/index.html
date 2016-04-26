@@ -34,7 +34,7 @@
                 <div class="box_content max_height">
                     <div ng-cloak style="position:absolute; left:0; width:100%">
                         <md-content>
-                            <md-tabs md-dynamic-height md-border-bottom md-swipe-content>
+                            <md-tabs md-border-bottom md-swipe-content>
                                 <md-tab label="{{ 'MAIN_MATCH_GROUP_YOUR_TURN_MATCHES' | translate }}">
                                     <md-content class="md-padding">
                                         <!-- <div ng-if="main.yourTurnMatches().length"> -->
@@ -548,10 +548,12 @@
         function ($mdThemingProvider, $mdIconProvider) {
           $mdThemingProvider
               .theme('default')
-              .primaryPalette('purple', {
+              .primaryPalette('teal', {
                   'hue-1' : '300'
               })
-              .accentPalette('pink');
+              .accentPalette('deep-orange', {
+                  'default' : '500'
+              })
         }]);
   angular.bootstrap(document, ["whateverNameApp"]);
 }
