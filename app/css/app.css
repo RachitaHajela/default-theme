@@ -157,7 +157,7 @@ img.hero {
   flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
-  background: #9C27B0;
+  background: #009688;
 }
 
 .game-name {
@@ -326,7 +326,7 @@ img.hero {
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
 
-  background-color: #E91E63;
+  background-color: #FF5722;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -353,7 +353,7 @@ img.hero {
   margin: 0 2px;
 }
 .next-player {
-  background-color: #E91E63;
+  background-color: #FF5722;
   color: #fff;
   border-radius: 5px;
   padding: 10px;
@@ -442,12 +442,12 @@ img.hero {
 }
 
 .game_header {
-  background-color: #9C27B0;
+  background-color:#009688;
 }
 
 .topbar_toggler {
   height: 20px;
-  background-color: #9C27B0;
+  background-color: #009688;
   color: #fff;
   font-size: 10px;
   text-align: center;
@@ -477,7 +477,7 @@ img.hero {
 }*/
 
 .friends-invite .header {
-	background: #9C27B0;
+	background: #009688;
 	color: #fff;
 	text-align: center;
 	font-size: 37px;
