@@ -12,7 +12,7 @@
     <meta name="format-detection" content="telephone=no" />
 
     <!-- To ensure CSS files are downloaded in parallel, always include external CSS before external JavaScript. -->
-    <link rel="stylesheet" href="css/app.min.css" />
+    <link rel="stylesheet" href="css/app.css" />
 
     <!-- CSS for material design -->
     <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
@@ -30,73 +30,64 @@
                     </div>
                 </div>
             </div>
-            <div class="overflow-y-scroll max_height">
-                <div class="box_content max_height">
-                    <div ng-cloak style="position:absolute; left:0; width:100%">
-                        <md-content>
-                            <md-tabs md-border-bottom md-swipe-content>
-                                <md-tab label="{{ 'MAIN_MATCH_GROUP_YOUR_TURN_MATCHES' | translate }}">
-                                    <md-content class="md-padding">
-                                        <!-- <div ng-if="main.yourTurnMatches().length"> -->
-                                            <div class="card-group-title">{{ 'MAIN_MATCH_GROUP_YOUR_TURN_MATCHES' | translate }}</div>
-                                            <div class="card-group">
-                                                <div class="match" ng-repeat="match in main.yourTurnMatches() track by match.getMatchId()">
-                                                    <div class="top" ng-click="match.load()">
-                                                        <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }} <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
-                                                        <div class="subtitle">{{ 'MAIN_MATCH_STARTED_ON' | translate }} <span class="short-date-fixed-width">{{match.createdTime() | date:'short'}}</span></div>
-                                                    </div>
-                                                    <div class="img-container">
-                                                        <img alt="Player avatar" ng-class="{img: true}" ng-repeat="player in match.getPlayers({limit:1, excludeMe: true})" ng-src="{{player.getAvatarImage()}}"
-                                                        ng-click="main.showPlayerInfoModal(player, match)">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <!-- </div> -->
-                                    </md-content>
-                                </md-tab>
-                                <md-tab label="{{ 'MAIN_MATCH_GROUP_OPPONENT_TURN_MATCHES' | translate }}">
-                                    <md-content class="md-padding">
-                                        <!-- <div ng-if="main.opponentTurnMatches().length"> -->
-                                            <div class="card-group-title">{{ 'MAIN_MATCH_GROUP_OPPONENT_TURN_MATCHES' | translate }}</div>
-                                            <div class="card-group">
-                                                <div class="match" ng-repeat="match in main.opponentTurnMatches() track by match.getMatchId()">
-                                                    <div class="top" ng-click="match.load()">
-                                                        <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }} <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
-                                                        <div class="subtitle">{{ 'MAIN_MATCH_STARTED_ON' | translate }} <span class="short-date-fixed-width">{{match.createdTime() | date:'short'}}</span></div>
-                                                    </div>
-                                                    <div class="img-container">
-                                                        <img alt="Player avatar" ng-class="{img: true}" ng-repeat="player in match.getPlayers({limit:1, excludeMe: true})" ng-src="{{player.getAvatarImage()}}"
-                                                        ng-click="main.showPlayerInfoModal(player, match)">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <!-- </div> -->
-                                    </md-content>
-                                </md-tab>
-                                <md-tab label="{{ 'MAIN_MATCH_GROUP_ENDED_MATCHES' | translate }}">
-                                    <md-content class="md-padding">
-                                        <!-- <div ng-if="main.endedMatches().length"> -->
-                                            <div class="card-group-title">{{ 'MAIN_MATCH_GROUP_ENDED_MATCHES' | translate }}</div>
-                                            <div class="card-group">
-                                                <div class="match" ng-repeat="match in main.endedMatches() track by match.getMatchId()">
-                                                    <div class="top" ng-click="match.load()">
-                                                        <div class="title">{{match.getMatchStatusText({showDisplayName:false})}}</div>
-                                                        <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }}
-                                                            <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
-                                                    </div>
-                                                    <div class="img-container">
-                                                        <img alt="Player avatar" ng-class="{img: true}" ng-repeat="player in match.getPlayers({limit:1, excludeMe: true})" ng-src="{{player.getAvatarImage()}}"
-                                                        ng-click="main.showPlayerInfoModal(player, match)">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <!-- </div> -->
-                                    </md-content>
-                                </md-tab>
-                             </md-tabs>
-                         </md-content>
-                     </div>
-                </div>
+
+            <div ng-cloak class="max_height">
+                <md-content class="max_height">
+                    <md-tabs class="max_height" md-border-bottom md-swipe-content>
+                        <md-tab label="{{ 'MAIN_MATCH_GROUP_YOUR_TURN_MATCHES' | translate }}">
+                            <md-content class="md-padding">                                           
+                                <div class="card-group">
+                                    <div class="match" ng-repeat="match in main.yourTurnMatches() track by match.getMatchId()">
+                                        <div class="top" ng-click="match.load()">
+                                            <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }} <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
+                                            <div class="subtitle">{{ 'MAIN_MATCH_STARTED_ON' | translate }} <span class="short-date-fixed-width">{{match.createdTime() | date:'short'}}</span></div>
+                                        </div>
+                                        <div class="img-container">
+                                            <img alt="Player avatar" ng-class="{img: true}" ng-repeat="player in match.getPlayers({limit:1, excludeMe: true})" ng-src="{{player.getAvatarImage()}}"
+                                            ng-click="main.showPlayerInfoModal(player, match)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- </div> -->
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="{{ 'MAIN_MATCH_GROUP_OPPONENT_TURN_MATCHES' | translate }}">
+                            <md-content class="md-padding">
+                                <div class="card-group">
+                                    <div class="match" ng-repeat="match in main.opponentTurnMatches() track by match.getMatchId()">
+                                        <div class="top" ng-click="match.load()">
+                                            <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }} <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
+                                            <div class="subtitle">{{ 'MAIN_MATCH_STARTED_ON' | translate }} <span class="short-date-fixed-width">{{match.createdTime() | date:'short'}}</span></div>
+                                        </div>
+                                        <div class="img-container">
+                                            <img alt="Player avatar" ng-class="{img: true}" ng-repeat="player in match.getPlayers({limit:1, excludeMe: true})" ng-src="{{player.getAvatarImage()}}"
+                                            ng-click="main.showPlayerInfoModal(player, match)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- </div> -->
+                            </md-content>
+                        </md-tab>
+                        <md-tab label="{{ 'MAIN_MATCH_GROUP_ENDED_MATCHES' | translate }}">
+                            <md-content class="md-padding">
+                                <div class="card-group">
+                                    <div class="match" ng-repeat="match in main.endedMatches() track by match.getMatchId()">
+                                        <div class="top" ng-click="match.load()">
+                                            <div class="title">{{match.getMatchStatusText({showDisplayName:false})}}</div>
+                                            <div class="subtitle">{{ 'MAIN_MATCH_LAST_MOVE_ON' | translate }}
+                                                <span class="short-date-fixed-width">{{match.updatedTime() | date:'short'}}</span></div>
+                                        </div>
+                                        <div class="img-container">
+                                            <img alt="Player avatar" ng-class="{img: true}" ng-repeat="player in match.getPlayers({limit:1, excludeMe: true})" ng-src="{{player.getAvatarImage()}}"
+                                            ng-click="main.showPlayerInfoModal(player, match)">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- </div> -->
+                            </md-content>
+                        </md-tab>
+                    </md-tabs>
+                </md-content>
             </div>
         </div>
         <div class="new-match-fab">
