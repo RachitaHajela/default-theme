@@ -38,7 +38,7 @@
                             <md-tab-label>
                                 <md-icon class="material-icons md-accent">person</md-icon>
                             </md-tab-label>
-                            <md-content>
+                            <md-tab-body>
                                 <div class="card-group-title">{{ 'MAIN_MATCH_GROUP_YOUR_TURN_MATCHES' | translate }}</div>
                                 <div class="card-group">
                                     <div class="match" ng-repeat="match in main.yourTurnMatches() track by match.getMatchId()">
@@ -53,14 +53,13 @@
                                     </div>
                                 </div>
                                 <!-- </div> -->
-                            </md-content>
+                            </md-tab-body>
                         </md-tab>
                         <md-tab>
                             <md-tab-label>
                                 <md-icon class="material-icons md-accent">people</md-icon>
                             </md-tab-label>
-                            <!--   <md-tab label="{{ 'MAIN_MATCH_GROUP_OPPONENT_TURN_MATCHES' | translate }}"> -->
-                            <md-content>
+                            <md-tab-body>
                                 <div class="card-group-title">{{ 'MAIN_MATCH_GROUP_OPPONENT_TURN_MATCHES' | translate }}</div>
                                 <div class="card-group">
                                     <div class="match" ng-repeat="match in main.opponentTurnMatches() track by match.getMatchId()">
@@ -75,14 +74,13 @@
                                     </div>
                                 </div>
                                 <!-- </div> -->
-                            </md-content>
+                            </md-tab-body>
                         </md-tab>
-                        <!-- <md-tab label="{{ 'MAIN_MATCH_GROUP_ENDED_MATCHES' | translate }}"> -->
                         <md-tab>
                             <md-tab-label>
                                 <md-icon class="material-icons md-accent">check_box</md-icon>
                             </md-tab-label>
-                            <md-content>
+                            <md-tab-body>
                                 <div class="card-group-title">{{ 'MAIN_MATCH_GROUP_ENDED_MATCHES' | translate }}</div>
                                 <div class="card-group">
                                     <div class="match" ng-repeat="match in main.endedMatches() track by match.getMatchId()">
@@ -98,7 +96,7 @@
                                     </div>
                                 </div>
                                 <!-- </div> -->
-                            </md-content>
+                            </md-tab-body>
                         </md-tab>
                     </md-tabs>
                 </md-content>
