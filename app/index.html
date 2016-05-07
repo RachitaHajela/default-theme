@@ -259,8 +259,8 @@
     <div ng-if="main.isFinishedLoading()" class="max_height" ng-cloak>
         <div ng-view class="max_height"></div>
 
-        <div class="notifications-container" ng-if="!main.isInPage('/playGame/')">
-            <div class="notification" ng-repeat="notification in main.notifications()">
+        <div class="notifications-container">
+            <div class="notification" ng-repeat="notification in main.notifications()" ng-if="!main.isInPage('/playGame/')">
                 <div class="notification-content">
                     <img alt="Player avatar" class="avatar notification-avatar" ng-if="notification.player()" width="50" height="50" ng-click="main.showPlayerInfoModal(notification.player(), notification.match())"
                     ng-src="{{notification.player().getAvatarImage()}}">
