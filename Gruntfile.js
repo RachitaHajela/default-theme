@@ -12,6 +12,7 @@ module.exports = function(grunt) {
           cache: [
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js',
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-route.min.js',
+            'ts/app-l10n.js',
             'http://www.multiplayer-gaming.com/api/loader.min.js?app=v201',
             'css/app.min.css',
             'imgs/animatedEllipse.gif',
@@ -21,6 +22,7 @@ module.exports = function(grunt) {
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.min.js',
             'http://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.min.js',
             'http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0-rc4/angular-material.min.js',
+            'http://fonts.gstatic.com/s/materialicons/v15/2fcrYFNaTjcS6g4U3t-Y5StnKWgpfO2iSkLzTz-AABg.ttf',
           ],
           network: !isForTesting ? ['*'] : 
             ['http://www.multiplayer-gaming.com/api/app.' + apiVersion + '.min.js',
@@ -107,8 +109,8 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [
       'ts',
       'postcss',
-      'manifest:forTesting',
-      'http-server', 'protractor',
+    //  'manifest:forTesting',
+    //  'http-server', 'protractor',
       'manifest:forProduction']);
   grunt.registerTask('skipProtractor', ['ts',
       'postcss',
