@@ -232,7 +232,7 @@
                 </div>
             </div>
             <!-- Friends list. can be filtered by using the search in the header. -->
-            <ul class="friends-list" ng-if="main.fb().friends().length > 0">
+            <ul class="friends-list overflow-y-scroll" ng-if="main.fb().friends().length > 0">
                 <li class="friend" ng-repeat="friend in main.fb().friends() | filter:main.model().facebookFriendsFilter">
                     <img alt="Friend avatar" ng-src="{{friend.getAvatarImage()}}">
                     <div class="name">{{friend.getDisplayName()}}</div>
