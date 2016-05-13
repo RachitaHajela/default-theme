@@ -239,7 +239,7 @@
                     <span class="invite-button" ng-click="main.fb().startMatchWith([friend])">{{ 'FB_FRIENDS_ACTION_INVITE' | translate }}</span>
                 </li>
             </ul> -->
-            <md-list ng-if="main.fb().friends().length > 0">
+            <md-list class="overflow-y-scroll" ng-if="main.fb().friends().length > 0">
                 <md-list-item ng-repeat="friend in main.fb().friends() | filter:main.model().facebookFriendsFilter">
                     <img alt="Friend avatar" ng-src="{{friend.getAvatarImage()}}" class="md-avatar" />
                     <p>{{friend.getDisplayName()}}</p>
