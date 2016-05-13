@@ -231,14 +231,24 @@
                     <a id="test_cancel_name_filter" class="cancel-button" ng-click="main.fb().toggleNameFilter()" title="Cancel">{{ 'FB_FRIENDS_FILTER_CANCEL' | translate }}</a>
                 </div>
             </div>
-            <!-- Friends list. can be filtered by using the search in the header. -->
+            <!-- Friends list. can be filtered by using the search in the header. 
             <ul class="friends-list overflow-y-scroll" ng-if="main.fb().friends().length > 0">
                 <li class="friend" ng-repeat="friend in main.fb().friends() | filter:main.model().facebookFriendsFilter">
                     <img alt="Friend avatar" ng-src="{{friend.getAvatarImage()}}">
                     <div class="name">{{friend.getDisplayName()}}</div>
                     <span class="invite-button" ng-click="main.fb().startMatchWith([friend])">{{ 'FB_FRIENDS_ACTION_INVITE' | translate }}</span>
                 </li>
-            </ul>
+            </ul> -->
+            <md-list ng-if="main.fb().friends().length > 0">
+                <md-list-item ng-repeat="friend in main.fb().friends() | filter:main.model().facebookFriendsFilter">
+                    <img alt="Friend avatar" ng-src="{{friend.getAvatarImage()}}" class="md-avatar" />
+                    <p>{{friend.getDisplayName()}}</p>
+                    <md-button class="md-secondary" ng-click="main.fb().startMatchWith([friend])">
+                        {{ 'FB_FRIENDS_ACTION_INVITE' | translate }}
+                    </md-button>
+                    <md-divider ng-if="!$last"></md-divider>
+                </md-list-item>
+            </md-list>
             <div id="test_invite_friends_fb_login" ng-if="main.fb().showLoginButton()" ng-click="main.fb().login()" class="facebook-login">
                 {{ 'MAIN_LOG_IN_WITH_FACEBOOK' | translate }}
             </div>
